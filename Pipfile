@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-daemon = "*"
+pyside6 = "*"
+ksync = "*"
+
+[dev-packages]
+ipython = "*"
+pylint = "*"
+black = "*"
+
+[requires]
+python_version = "3.10"
