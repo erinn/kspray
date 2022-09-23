@@ -19,7 +19,9 @@ logger = logging.getLogger(__name__)
 
 
 class Console(QObject):
-    """ """
+    """
+    Class representing the console program.
+    """
 
     def __init__(self, parent=None):
         """Initializer."""
@@ -38,19 +40,20 @@ class Console(QObject):
 
     def connect_signals_slots(self) -> None:
         """
-        Conenct the signals to the slots.
+        Connect the signals to the slots.
 
         Returns:
-
+            None
         """
         self.nam.finished.connect(self.handle_response)
         self.serial_port.readyRead.connect(self.parse_serial_data)
 
     def handle_response(self, reply: QtNetwork.QNetworkReply) -> None:
         """
-        Handle the response to a QTNetworkAccessManager action
-        Returns:
+        Handle the response to a QTNetworkAccessManager action.
 
+        Returns:
+            None
         """
         logger.debug("Checking response from %s server.", self.url.toString())
         error = reply.error()
@@ -66,6 +69,9 @@ class Console(QObject):
     def open_serial_port(self) -> None:
         """
         Open the QSerialport object for use in the program.
+
+        Returns:
+            None
         """
         baud_rate = {
             "4800": QSerialPort.BaudRate.Baud4800,
@@ -128,11 +134,12 @@ class Console(QObject):
 
             QCoreApplication.quit()
 
-    def parse_serial_data(self):
+    def parse_serial_data(self) -> None:
         """
+        Parse the raw data sent by the serial port.
 
         Returns:
-
+            None
         """
         stx = b"\x02"
         etx = b"\x03"
@@ -145,6 +152,7 @@ class Console(QObject):
 
         logger.debug("Raw binary line received: %s", binary_line)
 
+        # Strip ASCII STX and ETX from the line and then split on \r\n.
         lines = binary_line.strip(stx).strip(etx).splitlines()
 
         for line in lines:
@@ -153,15 +161,16 @@ class Console(QObject):
                 k = KMessage(line)
                 self.send_to_caltopo(k)
 
-    def send_to_caltopo(self, fleetsync_message: KMessage):
+    def send_to_caltopo(self, fleetsync_message: KMessage) -> None:
         """
         Format the data and send it to the CalTopo API.
 
         Args:
-            fleetsync_message:
+            fleetsync_message: A KMessage object representing the message
+                               received.
 
         Returns:
-
+            None
         """
         logger.debug("Sending data to URL: %s", self.url.toString())
 
