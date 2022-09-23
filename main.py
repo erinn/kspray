@@ -1,5 +1,6 @@
 import logging
 import sys
+from time import sleep
 
 from PySide6.QtCore import (
     QCoreApplication,
@@ -136,6 +137,9 @@ class Console(QObject):
         stx = b"\x02"
         etx = b"\x03"
 
+        # Give the serial port time to push data.
+        sleep(1)
+
         # Move from QByteArray to python bytes.
         binary_line = self.serial_port.readAll().data()
 
@@ -146,12 +150,8 @@ class Console(QObject):
         for line in lines:
             logger.debug("Parsing binary line %s", line)
             if line.startswith(b"$PKLSH"):
-                try:
-                    k = KMessage(line)
-                    self.send_to_caltopo(k)
-
-                except Exception:
-                    pass
+                k = KMessage(line)
+                self.send_to_caltopo(k)
 
     def send_to_caltopo(self, fleetsync_message: KMessage):
         """
@@ -163,14 +163,14 @@ class Console(QObject):
         Returns:
 
         """
-        logger.debug("Sending data to URL:", self.url.toString())
+        logger.debug("Sending data to URL: %s", self.url.toString())
 
         query = QUrlQuery()
         query.addQueryItem(
             "id", f"{fleetsync_message.fleet_id}-{fleetsync_message.device_id}"
         )
-        query.addQueryItem("lat", fleetsync_message.nmea_message.lat)
-        query.addQueryItem("lng", fleetsync_message.nmea_message.lon)
+        query.addQueryItem("lat", str(fleetsync_message.nmea_message.lat))
+        query.addQueryItem("lng", str(fleetsync_message.nmea_message.lon))
 
         self.url.setQuery(query.query())
         self.request.setUrl(self.url)
