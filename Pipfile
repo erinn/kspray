@@ -13,6 +13,9 @@ ipython = "*"
 pylint = "*"
 black = "*"
 pytest = "*"
+mkdocs = "*"
+mkdocs-material = "*"
+mkdocstrings = {extras = ["python"], version = "*"}
 
 [requires]
 python_version = "3.10"
